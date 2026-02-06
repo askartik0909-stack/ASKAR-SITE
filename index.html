@@ -22,10 +22,27 @@
 
         * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
         body { margin: 0; background: var(--bg); color: var(--text); }
-        .wrapper { display: flex; height: 100vh; overflow: hidden; }
+        .wrapper { display: flex; height: 100vh; overflow: hidden; position: relative; }
+
+        /* --- Кнопка-язычок (бургер) --- */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
 
         /* Сайдбар */
-        .sidebar { width: 280px; background: var(--primary); color: white; display: none; flex-direction: column; padding: 30px 20px; }
+        .sidebar { width: 280px; background: var(--primary); color: white; display: none; flex-direction: column; padding: 30px 20px; transition: transform 0.3s ease; }
         .sidebar .logo { font-size: 24px; font-weight: 800; margin-bottom: 50px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 20px; }
         .nav-item { padding: 15px 20px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; transition: all 0.3s; color: rgba(255,255,255,0.8); }
         .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
@@ -65,21 +82,30 @@
         .divider { margin: 20px 0; display: flex; align-items: center; text-align: center; color: #999; font-size: 12px; }
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #eee; }
 
+        /* Мобильная адаптация */
         @media (max-width: 768px) {
-            .wrapper { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; padding: 15px; order: 2; display: none; } /* По умолчанию скрыт до логина */
-            .sidebar .logo { display: none; }
-            .nav-item { padding: 10px; text-align: center; font-size: 12px; }
-            .content { padding: 20px; order: 1; }
+            .mobile-toggle { display: block; }
+            .sidebar { 
+                position: fixed; 
+                left: 0; 
+                top: 0; 
+                height: 100%; 
+                z-index: 1000; 
+                transform: translateX(-100%); 
+            }
+            .sidebar.open { transform: translateX(0); display: flex !important; }
+            .content { padding: 80px 20px 20px 20px; }
             h1 { font-size: 22px; }
-            .card { padding: 15px; }
+            .card { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
+<button class="mobile-toggle" id="m-btn" onclick="toggleSidebar()">☰</button>
+
 <div class="wrapper">
-    <div id="page-login" style="display: flex; width: 100%; height: 100vh; justify-content: center; align-items: center; background: var(--primary);">
+    <div id="page-login" style="display: flex; width: 100%; height: 100vh; justify-content: center; align-items: center; background: var(--primary); position: absolute; z-index: 2000;">
         <div style="background: white; padding: 40px; border-radius: 20px; width: 400px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
             <h2 style="color: var(--primary); margin-bottom: 10px;">StudentHub Login</h2>
             <p style="color: #666; margin-bottom: 25px;">Введите "admin" для входа</p>
@@ -138,30 +164,7 @@
                 </div>
             </div>
         </div>
-
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-top: 25px;">
-            <div class="card">
-                <h2>📢 Последние новости колледжа</h2>
-                <div style="border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px;">
-                    <h4 style="margin: 0;">Старт весенней практики 2026</h4>
-                    <p style="font-size: 14px; color: var(--gray); margin: 5px 0;">Всем студентам 4 курса необходимо подтвердить место прохождения до конца недели.</p>
-                </div>
-                <div style="border-left: 3px solid var(--primary); padding-left: 15px;">
-                    <h4 style="margin: 0;">Новый партнер: Kaspi.kz</h4>
-                    <p style="font-size: 14px; color: var(--gray); margin: 5px 0;">Открыт набор на стажировку для мобильных разработчиков и аналитиков данных.</p>
-                </div>
-            </div>
-
-            <div class="card" style="background: var(--light-bg); border: none;">
-                <h3>💡 Совет дня</h3>
-                <p style="font-style: italic; color: var(--primary);">
-                    "Работодатели ценят не только знания кода, но и Soft Skills. Опишите в резюме свои командные проекты в колледже!"
-                </p>
-                <hr style="border: 0; border-top: 1px solid rgba(128, 24, 42, 0.1); margin: 15px 0;">
-                <p style="font-size: 13px; color: var(--gray);">Обновлено: сегодня</p>
-            </div>
         </div>
-    </div>
 
     <div id="page-catalog" class="content">
         <h1>🏢 Доступные вакансии</h1>
@@ -185,13 +188,6 @@
                 <p>Разрабатывал систему учета библиотеки колледжа. Ищу практику в Backend.</p>
                 <button class="btn btn-secondary" style="width: auto;">Пригласить на собеседование</button>
             </div>
-            <div class="card">
-                <h3>Мария Петрова</h3>
-                <p><b>Специальность:</b> Дизайн (3 курс)</p>
-                <div class="tag">Figma</div><div class="tag">UI/UX</div><div class="tag">Adobe Illustrator</div>
-                <p>Креативный дизайнер, создаю прототипы мобильных приложений и фирменные стили.</p>
-                <button class="btn btn-secondary" style="width: auto;">Пригласить на собеседование</button>
-            </div>
         </div>
     </div>
 
@@ -205,7 +201,7 @@
         <div class="card">
             <label>Название компании</label>
             <input type="text" id="new-comp-name" placeholder="Напр: ТОО 'KBTU-IT'">
-            <label>Тип (IT, Design, Marketing, Network)</label>
+            <label>Тип</label>
             <input type="text" id="new-comp-type" placeholder="IT">
             <label>Адрес (в Алматы)</label>
             <input type="text" id="new-comp-addr" placeholder="Абая 10, Алматы">
@@ -222,7 +218,7 @@
                 <div class="msg bot">Привет! Я помогу тебе найти идеальное место для практики. О чем хочешь спросить?</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:15px;">
-                <input type="text" id="ai-msg" style="margin:0" placeholder="Напишите свой вопрос (например: Как составить резюме?)...">
+                <input type="text" id="ai-msg" style="margin:0" placeholder="Напишите свой вопрос...">
                 <button class="btn" style="width: auto; margin:0;" onclick="askAI()">Отправить</button>
             </div>
         </div>
@@ -238,7 +234,9 @@
         { id: 3, name: "NetMaster", spec: "Network", desc: "Настройка серверного оборудования", status: "closed", tags: ["Cisco", "Linux"], addr: "Толе би 55", lat: 43.255, lng: 76.940 }
     ];
 
-    let currentFilter = 'All';
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+    }
 
     function login() {
         if(document.getElementById('user').value === 'admin') enterSystem();
@@ -255,6 +253,10 @@
     function showPage(id) {
         document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
         document.getElementById(id).style.display = 'block';
+        
+        // Закрываем сайдбар на мобилках после клика
+        document.getElementById('sidebar').classList.remove('open');
+
         document.querySelectorAll('.nav-item').forEach(n => {
             n.classList.remove('active');
             if(n.onclick.toString().includes(id)) n.classList.add('active');
@@ -275,7 +277,7 @@
     function renderCatalog() {
         const list = document.getElementById('catalog-list');
         list.innerHTML = '';
-        const filtered = currentFilter === 'All' ? places : places.filter(p => p.spec === currentFilter);
+        const filtered = (typeof currentFilter === 'undefined' || currentFilter === 'All') ? places : places.filter(p => p.spec === currentFilter);
 
         filtered.forEach(p => {
             const card = document.createElement('div');
@@ -361,8 +363,8 @@
         chat.innerHTML += `<div class="msg user">${input.value}</div>`;
         
         setTimeout(() => {
-            let response = "Интересный вопрос! Для студентов Almaty Polytechnic College я рекомендую подтянуть навыки SQL и английского. По твоему запросу в каталоге есть подходящие вакансии.";
-            if(input.value.toLowerCase().includes("резюме")) response = "Для резюме важно указать стек: например, Python/Django или Figma. Посмотри примеры во вкладке 'Студенты'.";
+            let response = "Интересный вопрос! Для студентов Almaty Polytechnic College я рекомендую подтянуть навыки SQL и английского.";
+            if(input.value.toLowerCase().includes("резюме")) response = "Для резюме важно указать стек технологий. Посмотри примеры во вкладке 'Студенты'.";
             chat.innerHTML += `<div class="msg bot">${response}</div>`;
             chat.scrollTop = chat.scrollHeight;
         }, 600);
